@@ -9,7 +9,7 @@
 下载可执行文件并放置到系统环境变量，然后和正常的命令一样使用
 
 ```bash
-sqliteweb -url <database.db>
+sqliteweb <database.db> --port 8000
 ```
 
 然后打开浏览器，访问 `http://127.0.0.0:8000` 即可。
