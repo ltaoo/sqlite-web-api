@@ -8,6 +8,7 @@ output
 # 测试数据库
 /*.db
 *.exe
+*.zip
 
 # 前端构建输出
 */**/frontend/*

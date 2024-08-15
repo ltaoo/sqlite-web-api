@@ -122,16 +122,23 @@ func executeSelectQuery(db *sql.DB, sqlStatement string) ([][]interface{}, error
 
 func main() {
 	var url string
+	var port string
 
-	flag.StringVar(&url, "url", "", "The Sqlite3 db file")
 	flag.Parse()
-
+	args := flag.Args()
+	if len(args) > 0 {
+		url = args[0]
+	}
+	for i, arg := range args {
+		if (arg == "--port" || arg == "-port") && i+1 < len(args) {
+			portValue := args[i+1]
+			port = portValue
+		}
+	}
 	if url == "" {
-		fmt.Println("Error: the media_id is required")
-		flag.Usage()
+		fmt.Println("请指定数据库文件路径，例如 sqliteweb ./test.db")
 		return
 	}
-
 	db, err := sql.Open("sqlite3", url)
 	if err != nil {
 		log.Fatalf("Failed to open database: %v", err)
@@ -140,7 +147,7 @@ func main() {
 	if err := db.Ping(); err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
-
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 
 	r.GET("/", returnIndexHTML)
@@ -222,7 +229,7 @@ func main() {
 			}
 		})
 	}
-
-	// 启动服务器
-	r.Run("127.0.0.1:8000")
+	web := "0.0.0.0:" + port
+	fmt.Printf("Server is running at: %v", web)
+	r.Run(web)
 }

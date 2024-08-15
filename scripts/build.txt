@@ -1,0 +1,24 @@
+# 打包 windows
+go build -a -ldflags="-s -w" -o sqliteweb
+
+# 打包 linux
+
+set GOOS=linux
+set GOARCH=amd64
+set CGO_ENABLED=0
+go build -a -ldflags="-s -w" -o sqliteweb
+
+docker build -t sqliteweb . 
+docker run --rm -v ${PWD}:/output sqliteweb cp /app/sqliteweb /output/
+upx .\sqliteweb
+
+# 打包 macos
+
+set GOOS=darwin
+set GOARCH=amd64
+go build -a -ldflags="-s -w" -o sqliteweb
+
+# 打包 M1/M2 芯片 macos
+
+set GOARCH=arm64
+go build -a -ldflags="-s -w" -o sqliteweb
