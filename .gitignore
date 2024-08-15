@@ -1,0 +1,36 @@
+# 编译输出
+word-note
+output
+*.vtt
+*.pdf
+*.mp3
+
+# 测试数据库
+/*.db
+*.exe
+
+# 前端构建输出
+*/**/frontend/*
+frontend
+
+# Go 依赖文件
+vendor/
+
+# Go 模块文件
+go.sum
+
+# 操作系统特定文件
+.DS_Store
+Thumbs.db
+
+# 环境变量文件
+.env
+
+# 临时文件
+*.log
+*.tmp
+
+*.pdf
+*.ass
+*.ttf
+*.otf
