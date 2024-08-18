@@ -1,14 +1,9 @@
 # 打包 windows
-go build -a -ldflags="-s -w" -o sqliteweb
+go build -a -ldflags="-s -w -X main.env=prod" -o sqliteweb.exe
 
 # 打包 linux
 
-set GOOS=linux
-set GOARCH=amd64
-set CGO_ENABLED=0
-go build -a -ldflags="-s -w" -o sqliteweb
-
-docker build -t sqliteweb . 
+docker build -t sqliteweb .
 docker run --rm -v ${PWD}:/output sqliteweb cp /app/sqliteweb /output/
 upx .\sqliteweb
 

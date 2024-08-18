@@ -17,5 +17,5 @@ ENV GOARCH=amd64
 ENV GIN_MODE=release
 
 # 编译二进制文件
-RUN go build -ldflags '-extldflags "-static"' -o sqliteweb
+RUN go build -ldflags '-extldflags "-static" -X main.env=prod' -o sqliteweb
 

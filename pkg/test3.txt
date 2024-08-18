@@ -1,0 +1,16 @@
+CREATE TABLE "PlayHistoryV2" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "created" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "text" TEXT NOT NULL,
+    "duration" REAL NOT NULL DEFAULT 0,
+    "current_time" REAL NOT NULL DEFAULT 0,
+    "thumbnail_path" TEXT,
+    "file_id" TEXT,
+    "media_id" TEXT NOT NULL,
+    "media_source_id" TEXT NOT NULL,
+    "member_id" TEXT NOT NULL,
+    CONSTRAINT "PlayHistoryV2_media_id_fkey" FOREIGN KEY ("media_id") REFERENCES "Media" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "PlayHistoryV2_media_source_id_fkey" FOREIGN KEY ("media_source_id") REFERENCES "MediaSource" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "PlayHistoryV2_member_id_fkey" FOREIGN KEY ("member_id") REFERENCES "Member" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);

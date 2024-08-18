@@ -1,0 +1,14 @@
+CREATE TABLE "student" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "created" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "name" TEXT NOT NULL,
+    "age" INTEGER NOT NULL,
+    "height" INTEGER NOT NULL,
+    "birth_at" DATETIME NOT NULL,
+    "hobby" TEXT,
+    "grade_id" INTEGER NOT NULL,
+    "friend_id" INTEGER,
+    CONSTRAINT "student_grade_id_fkey" FOREIGN KEY ("grade_id") REFERENCES "grade_class" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "student_friend_id_fkey" FOREIGN KEY ("friend_id") REFERENCES "student" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+)

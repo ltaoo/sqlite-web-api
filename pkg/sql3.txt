@@ -1,0 +1,24 @@
+
+media_profiles|
+CREATE TABLE `media_profiles` (
+	`id` integer PRIMARY KEY AUTOINCREMENT,
+	`name` text,
+	`original_name` text,
+	`order` integer,
+	`poster` text,
+	`unique_id` text,
+	CONSTRAINT `uni_media_profiles_unique_id` UNIQUE (`unique_id`)
+)
+
+media_episode_profiles|
+CREATE TABLE "media_episode_profiles"  (
+	`id` integer PRIMARY KEY AUTOINCREMENT,
+	`name` text,
+	`order` integer,
+	`overview` text,
+	`still_path` text,
+	`unique_id` text,
+	`media_profile_id` integer NOT NULL,
+	CONSTRAINT `fk_media_profiles_episodes` FOREIGN KEY (`media_profile_id`) REFERENCES `media_profiles`(`id`),
+	CONSTRAINT `uni_media_episode_profiles_unique_id` UNIQUE (`unique_id`)
+)

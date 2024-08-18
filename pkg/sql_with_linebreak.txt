@@ -1,0 +1,9 @@
+CREATE TABLE `users` (
+	`id` integer PRIMARY KEY AUTOINCREMENT,
+	`created_at` datetime,
+	`name` varchar(100) NOT NULL,
+	`avatar` text,
+	`subtitle_id` integer,
+	CONSTRAINT `fk_media_profiles_episodes` FOREIGN KEY (`subtitle_id`) REFERENCES `subtitles`(`id`),
+	CONSTRAINT `uni_media_episode_profiles_name` UNIQUE (`name`)
+)

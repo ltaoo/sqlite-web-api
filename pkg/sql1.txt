@@ -1,0 +1,22 @@
+users|CREATE TABLE `users` (`id` integer PRIMARY KEY AUTOINCREMENT,`created_at` datetime,`updated_at` datetime,`deleted_at` datetime,`name` varchar(100),`email` varchar(100),`avatar` varchar(255), `profile` varchar(255))
+sqlite_sequence|CREATE TABLE sqlite_sequence(name,seq)
+
+subtitle_words|CREATE TABLE `subtitle_words` (`word_in_paragraph_id` integer,`subtitle_id` integer,PRIMARY KEY (`word_in_paragraph_id`,`subtitle_id`),CONSTRAINT `fk_subtitle_words_word_in_paragraph` FOREIGN KEY (`word_in_paragraph_id`) REFERENCES `word_in_paragraphs`(`id`),CONSTRAINT `fk_subtitle_words_subtitle` FOREIGN KEY (`subtitle_id`) REFERENCES `subtitles`(`id`))
+
+paragraphs|CREATE TABLE `paragraphs` (`id` integer PRIMARY KEY AUTOINCREMENT,`created_at` datetime,`updated_at` datetime,`line` integer NOT NULL,`text1` text NOT NULL,`text2` text,`text3` text,`subtitle_id` integer NOT NULL, `start` text, `end` text,CONSTRAINT `fk_subtitles_paragraphs` FOREIGN KEY (`subtitle_id`) REFERENCES `subtitles`(`id`))
+
+paragraph_words|CREATE TABLE `paragraph_words` (`word_in_paragraph_id` integer,`paragraph_id` integer,PRIMARY KEY (`word_in_paragraph_id`,`paragraph_id`),CONSTRAINT `fk_paragraph_words_word_in_paragraph` FOREIGN KEY (`word_in_paragraph_id`) REFERENCES `word_in_paragraphs`(`id`),CONSTRAINT `fk_paragraph_words_paragraph` FOREIGN KEY (`paragraph_id`) REFERENCES `paragraphs`(`id`))
+
+subtitles|CREATE TABLE "subtitles"  (`id` integer PRIMARY KEY AUTOINCREMENT,`created_at` datetime,`updated_at` datetime,`title` text,`suffix` text,`language` text,`media_episode_profile_id` integer,CONSTRAINT `uni_subtitles_title` UNIQUE (`title`),CONSTRAINT `fk_media_episode_profiles_subtitles` FOREIGN KEY (`media_episode_profile_id`) REFERENCES `media_episode_profiles`(`id`))
+
+media_profiles|CREATE TABLE `media_profiles` (`id` integer PRIMARY KEY AUTOINCREMENT,`name` text,`original_name` text,`order` integer,`poster` text,`unique_id` text,CONSTRAINT `uni_media_profiles_unique_id` UNIQUE (`unique_id`))
+
+media_episode_profiles|CREATE TABLE "media_episode_profiles"  (`id` integer PRIMARY KEY AUTOINCREMENT,`name` text,`order` integer,`overview` text,`still_path` text,`unique_id` text,`media_profile_id` integer NOT NULL,CONSTRAINT `fk_media_profiles_episodes` FOREIGN KEY (`media_profile_id`) REFERENCES `media_profiles`(`id`),CONSTRAINT `uni_media_episode_profiles_unique_id` UNIQUE (`unique_id`))
+
+words|CREATE TABLE "words"  (`id` integer PRIMARY KEY AUTOINCREMENT,`created_at` datetime,`updated_at` datetime,`deleted_at` datetime,`word` varchar(100),`pronunciation` text,`part_of_speech` text,`meaning` text,`example_sentence` text,`synonym` text,`antonym` text,`etymology` text,`common_collocation` text,`memory_tip` text,`related_picture` text,`personal_note` text,`text` text NOT NULL,`sw` text,`phonetic` text,`definition` text,`translation` text,`pos` text,`collins` integer DEFAULT 0,`oxford` integer DEFAULT 0,`tag` text,`bnc` integer,`frq` integer,`exchange` text,CONSTRAINT `uni_words_text` UNIQUE (`text`))
+
+word_in_paragraphs|CREATE TABLE "word_in_paragraphs"  (`id` integer PRIMARY KEY AUTOINCREMENT,`text` text NOT NULL,`sw` text,`phonetic` text,`definition` text,`translation` text,`pos` text,`collins` integer DEFAULT 0,`oxford` integer DEFAULT 0,`tag` text,`bnc` integer,`frq` integer,`exchange` text,`start` integer,`end` integer,`subtitle_id` integer,`paragraph_id` integer,`profile_id` integer,CONSTRAINT `fk_word_in_paragraphs_subtitle` FOREIGN KEY (`subtitle_id`) REFERENCES `subtitles`(`id`),CONSTRAINT `fk_word_in_paragraphs_paragraph` FOREIGN KEY (`paragraph_id`) REFERENCES `paragraphs`(`id`),CONSTRAINT `fk_word_in_paragraphs_profile` FOREIGN KEY (`profile_id`) REFERENCES `words`(`id`),CONSTRAINT `fk_paragraphs_words` FOREIGN KEY (`paragraph_id`) REFERENCES `paragraphs`(`id`),CONSTRAINT `fk_subtitles_words` FOREIGN KEY (`subtitle_id`) REFERENCES `subtitles`(`id`))
+
+wired_words|CREATE TABLE `wired_words` (`id` integer PRIMARY KEY AUTOINCREMENT,`text` text NOT NULL,`start` integer,`end` integer,`subtitle_id` integer,`paragraph_id` integer,CONSTRAINT `fk_wired_words_subtitle` FOREIGN KEY (`subtitle_id`) REFERENCES `subtitles`(`id`),CONSTRAINT `fk_wired_words_paragraph` FOREIGN KEY (`paragraph_id`) REFERENCES `paragraphs`(`id`))
+
+explain_of_paragraphs|CREATE TABLE `explain_of_paragraphs` (`id` integer PRIMARY KEY AUTOINCREMENT,`created_at` datetime,`updated_at` datetime,`content` text,`paragraph_id` integer,CONSTRAINT `fk_paragraphs_explains` FOREIGN KEY (`paragraph_id`) REFERENCES `paragraphs`(`id`))

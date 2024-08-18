@@ -8,6 +8,7 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -32,19 +33,60 @@ func returnIndexHTML(c *gin.Context) {
 }
 
 type TableColumn struct {
-	Cid       int         `json:"cid"`
-	Name      string      `json:"name"`
-	Type      string      `json:"type"`
-	NotNull   int         `json:"not_null"`
-	DfltValue interface{} `json:"value"`
-	Pk        int         `json:"pk"`
+	Name          string      `json:"name"`
+	Type          string      `json:"type"`
+	NotNull       bool        `json:"not_null"`
+	PrimaryKey    bool        `json:"primary_key"`
+	ForeignKey    bool        `json:"foreign_key"`
+	AutoIncrement bool        `json:"auto_increment"`
+	DefaultValue  interface{} `json:"default_value"`
+	Unique        bool        `json:"unique"`
+	References    string      `json:"references"`
+	// Cid       int         `json:"cid"`
+	// Name      string      `json:"name"`
+	// Type      string      `json:"type"`
+	// NotNull   int         `json:"not_null"`
+	// DfltValue interface{} `json:"value"`
+	// Pk        int         `json:"pk"`
 }
 type TableWithColumns struct {
 	Name    string        `json:"name"`
 	Columns []TableColumn `json:"columns"`
+	RAW     string        `json:"raw"`
+}
+type ForeignKey struct {
+	ReferenceKey string
+	TableName    string
+	PrimaryKey   string
 }
 
+func getTableForeignKeys(db *sql.DB, tableName string) (map[string]ForeignKey, error) {
+	query := fmt.Sprintf("PRAGMA foreign_key_list(%s);", tableName)
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	keys := make(map[string]ForeignKey)
+	for rows.Next() {
+		var foreign ForeignKey
+		var a1 string
+		var a2 string
+		var a3 string
+		var a4 string
+		var a5 string
+		if err := rows.Scan(&a1, &a2, &foreign.TableName, &foreign.ReferenceKey, &foreign.PrimaryKey, &a3, &a4, &a5); err != nil {
+			return nil, err
+		}
+		keys[foreign.ReferenceKey] = foreign
+	}
+	return keys, nil
+}
 func getTableColumns(db *sql.DB, tableName string) ([]TableColumn, error) {
+	foreignKeys, err := getTableForeignKeys(db, tableName)
+	if err != nil {
+		return nil, err
+	}
 	query := fmt.Sprintf("PRAGMA table_info(%s);", tableName)
 	rows, err := db.Query(query)
 	if err != nil {
@@ -55,37 +97,50 @@ func getTableColumns(db *sql.DB, tableName string) ([]TableColumn, error) {
 	var columns []TableColumn
 	for rows.Next() {
 		var col TableColumn
-		if err := rows.Scan(&col.Cid, &col.Name, &col.Type, &col.NotNull, &col.DfltValue, &col.Pk); err != nil {
+		var a1 string
+		if err := rows.Scan(&a1, &col.Name, &col.Type, &col.NotNull, &col.DefaultValue, &col.PrimaryKey); err != nil {
 			return nil, err
+		}
+		col.Type = strings.ToLower(col.Type)
+		foreign, has := foreignKeys[col.Name]
+		if has {
+			col.References = foreign.TableName
 		}
 		columns = append(columns, col)
 	}
-
 	return columns, nil
 }
 
 func FetchTables(db *sql.DB) ([]TableWithColumns, error) {
-	query := "SELECT name FROM sqlite_master WHERE type='table';"
+	query := "SELECT name, sql FROM sqlite_master WHERE type='table';"
 	rows, err := db.Query(query)
 	if err != nil {
 		log.Fatalf("Failed to fetch table names: %v", err)
 	}
 	defer rows.Close()
+	// var tables []pkg.Table
 	var tables []TableWithColumns
 	for rows.Next() {
-		var tableName string
-		if err := rows.Scan(&tableName); err != nil {
+		var name string
+		var profile string
+		if err := rows.Scan(&name, &profile); err != nil {
 			return tables, err
 		}
-		columns, err := getTableColumns(db, tableName)
+		// table := pkg.ParseTableCreateStatement(name, profile)
+		columns, err := getTableColumns(db, name)
 		if err != nil {
 			return tables, err
 		}
-		table := TableWithColumns{
-			Name:    tableName,
+		// if table.Columns == nil {
+		// 	fmt.Println(name, profile)
+		// }
+		// if table.Columns != nil {
+		// }
+		tables = append(tables, TableWithColumns{
+			Name:    name,
 			Columns: columns,
-		}
-		tables = append(tables, table)
+			RAW:     profile,
+		})
 	}
 	if err := rows.Err(); err != nil {
 		return tables, err
@@ -120,6 +175,8 @@ func executeSelectQuery(db *sql.DB, sqlStatement string) ([][]interface{}, error
 	return result, nil
 }
 
+var env string
+
 func main() {
 	var url string
 	var port string
@@ -139,6 +196,21 @@ func main() {
 		fmt.Println("请指定数据库文件路径，例如 sqliteweb ./test.db")
 		return
 	}
+	if port == "" {
+		port = "8000"
+	}
+	if env == "" {
+		env = "dev"
+	}
+	_, err := os.Stat(url)
+	if err != nil {
+		if os.IsNotExist(err) {
+			fmt.Println("文件不存在")
+			return
+		}
+		fmt.Println(err.Error())
+		return
+	}
 	db, err := sql.Open("sqlite3", url)
 	if err != nil {
 		log.Fatalf("Failed to open database: %v", err)
@@ -147,7 +219,9 @@ func main() {
 	if err := db.Ping(); err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
-	gin.SetMode(gin.ReleaseMode)
+	if env == "prod" {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	r := gin.Default()
 
 	r.GET("/", returnIndexHTML)
@@ -229,7 +303,11 @@ func main() {
 			}
 		})
 	}
-	web := "0.0.0.0:" + port
+	host := "127.0.0.1"
+	if env == "prod" {
+		host = "0.0.0.0"
+	}
+	web := host + ":" + port
 	fmt.Printf("Server is running at: %v", web)
 	r.Run(web)
 }

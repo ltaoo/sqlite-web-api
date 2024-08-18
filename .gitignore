@@ -8,7 +8,9 @@ output
 # 测试数据库
 /*.db
 *.exe
+sqliteweb
 *.zip
+data
 
 # 前端构建输出
 */**/frontend/*
