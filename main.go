@@ -35,12 +35,12 @@ func returnIndexHTML(c *gin.Context) {
 type TableColumn struct {
 	Name          string      `json:"name"`
 	Type          string      `json:"type"`
-	NotNull       bool        `json:"not_null"`
-	PrimaryKey    bool        `json:"primary_key"`
-	ForeignKey    bool        `json:"foreign_key"`
-	AutoIncrement bool        `json:"auto_increment"`
+	NotNull       int         `json:"not_null"`
+	PrimaryKey    int         `json:"primary_key"`
+	ForeignKey    int         `json:"foreign_key"`
+	AutoIncrement int         `json:"auto_increment"`
 	DefaultValue  interface{} `json:"default_value"`
-	Unique        bool        `json:"unique"`
+	Unique        int         `json:"unique"`
 	References    string      `json:"references"`
 	// Cid       int         `json:"cid"`
 	// Name      string      `json:"name"`
