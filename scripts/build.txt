@@ -4,7 +4,7 @@ go build -a -ldflags="-s -w -X main.env=prod" -o sqliteweb.exe
 # 打包 linux
 
 docker build -t sqliteweb .
-docker run --rm -v ${PWD}:/output sqliteweb cp /app/sqliteweb /output/
+docker run --rm -v ${PWD}/output:/output sqliteweb cp /app/sqliteweb /output/
 upx .\sqliteweb
 
 # 打包 macos

@@ -11,6 +11,7 @@ output
 sqliteweb
 *.zip
 data
+*.sql
 
 # 前端构建输出
 */**/frontend/*

@@ -2,7 +2,10 @@ module sqlite-web
 
 go 1.20
 
-require github.com/gin-gonic/gin v1.9.1
+require (
+	github.com/gin-gonic/gin v1.9.1
+	github.com/samber/lo v1.47.0
+)
 
 require (
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
