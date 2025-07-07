@@ -14,8 +14,8 @@ data
 *.sql
 
 # 前端构建输出
-*/**/frontend/*
-frontend
+**/frontend/dist
+**/frontend/node_modules
 
 # Go 依赖文件
 vendor/

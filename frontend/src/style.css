@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+  --transparent: transparent;
+  --gray-500: #a0aec0;
+  --base-scrollbar-foreground-color: var(--gray-500);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+* {
+  scrollbar-color: var(--base-scrollbar-foreground-color) var(--transparent);
+}
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(to bottom, transparent, rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+}
+.table__row {
+  background-color: var(--weui-BG-0)
+}
+.table__row:hover {
+  background-color: var(--weui-BG-2);
+}
+.__a {
+  animation: __a 0.1s;
+}
+
+@keyframes __a {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

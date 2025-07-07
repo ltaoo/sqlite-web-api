@@ -21,6 +21,16 @@ sqliteweb <database.db> --port 8000
 打开浏览器，访问 `http://127.0.0.0:8000` 即可
 <!-- open the browser, visit `http://127.0.0.0:8000` -->
 
+## 打包
+
+### linux
+
+在 macOS 打包 linux 平台
+
+```
+CC=x86_64-linux-musl-gcc CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o sqliteweb -trimpath -ldflags "-extldflags -static -w -X main.env=prod" ./main.go
+```
+
 ## 其他
 
 前端项目
